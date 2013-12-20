@@ -1,0 +1,139 @@
+package graficacion;
+
+import java_cup.runtime.*;
+import java.util.Vector;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.io.File;
+
+parser code{:
+    
+        Vector <Instrucciones> instruccion = new Vector<Instrucciones>();
+        Vector <Integer> opciones = new Vector<Integer>();
+	
+	public Vector<Instrucciones> getInstruccion(){	
+		return instruccion;
+	}
+
+	public Vector<Integer> getNumeros(){	
+		return opciones;
+	}
+
+        public void syntax_error(Symbol s){
+            System.out.println("El comando :"+s.value+" No es Valido a");
+        //  lista.add(new Errores(s.right+1,s.left,"Error sintactico Identificador " +s.value + " no reconocido." ));
+        }
+
+        public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
+            System.out.println("El comando :"+s.value+" No es Valido");
+        //.right+1,s.left,"Error sintactico Identificador  " +s.value + " no reconocido." ));
+        }
+:};
+
+terminal TEXTO;
+terminal String CADENA;
+terminal AGRUPAR, DESAGRUPAR;
+terminal TRIANGULO,LINEA,CIRCULO,PUNTO,CUADRADO,IMAGEN;
+terminal Double NUMERO;
+terminal COMA;
+terminal COMANDO;
+terminal LISTA;
+terminal VISTA;
+terminal SELECCIONAR;
+terminal ESCALAR,TRASLADAR,ROTAR;
+terminal KOCH , SIERPINSKI;
+terminal V;
+terminal NV;
+terminal DESHACER;
+terminal COLOR;
+terminal AZUL,ROJO,NEGRO,NARANJA,GRIS, AMARILLO,BLANCO,ROSA;
+
+non terminal archivo;
+non terminal comando;
+non terminal triangulo, imagen;
+non terminal linea;
+non terminal circulo;
+non terminal punto;
+non terminal cuadrado;
+non terminal vista;
+non terminal listav;
+non terminal listanv;
+non terminal seleccionar;
+non terminal opciones;
+non terminal rotar;
+non terminal escalar;
+non terminal trasladar;
+non terminal color;
+non terminal texto;
+
+archivo::=comando
+        | comando archivo
+        ;
+
+comando::= triangulo 
+        | linea
+        | circulo
+        | punto
+        | cuadrado
+        | imagen
+        | COMANDO {:parser.getInstruccion().add(new Comando());:}
+        | LISTA {:parser.getInstruccion().add(new  Lista());:}
+        | DESHACER {:parser.getInstruccion().add(new  Deshacer());:}        
+        | vista
+        | listav
+        | listanv
+        | seleccionar        
+        | rotar
+        | escalar
+        | error
+        | trasladar
+        | KOCH NUMERO:n {:parser.getInstruccion().add(new  Koch((int)Math.rint(n)));:}
+        | SIERPINSKI NUMERO:iteraciones {:parser.getInstruccion().add(new  Sierpinski( (int)Math.rint(iteraciones) ));:}
+        | color
+        | texto
+        | DESAGRUPAR {:parser.getInstruccion().add(new  Desagrupar());:}
+        ;
+
+color::=  COLOR ROJO {:parser.getInstruccion().add(new color("rojo"));:}
+        | COLOR GRIS {:parser.getInstruccion().add(new color("gris"));:}
+        | COLOR NEGRO {:parser.getInstruccion().add(new color("negro"));:}
+        | COLOR AZUL {:parser.getInstruccion().add(new color("azul"));:}
+        | COLOR NARANJA {:parser.getInstruccion().add(new color("naranja"));:}
+        | COLOR BLANCO {:parser.getInstruccion().add(new color("blanco"));:}
+        | COLOR ROSA {:parser.getInstruccion().add(new color("rosa"));:}
+        | COLOR AMARILLO {:parser.getInstruccion().add(new color("amarillo"));:}
+        ;
+
+
+opciones::= NUMERO:n {:parser.getNumeros().add((int)Math.rint(n));:}
+        |    opciones COMA NUMERO:n {:parser.getNumeros().add((int)Math.rint(n));:}
+        ;
+
+
+rotar::= ROTAR NUMERO:x COMA NUMERO:y COMA NUMERO:grados {:parser.getInstruccion().add(new  Rotar((int)Math.rint(x),(int)Math.rint(y),(int)Math.rint(grados))); :};
+
+escalar ::= ESCALAR NUMERO:n {:parser.getInstruccion().add(new  Escalar((int)Math.rint(n)));:};
+
+trasladar::= TRASLADAR NUMERO:n COMA NUMERO:m {:parser.getInstruccion().add(new  Trasladar((int)Math.rint(n),(int)Math.rint(m)));:};
+
+seleccionar::= SELECCIONAR   opciones {:parser.getInstruccion().add(new Seleccionar(parser.getNumeros()));:};
+
+vista::= VISTA NUMERO:n1 COMA NUMERO:n2 COMA NUMERO:n3 COMA  NUMERO:n4 {:parser.getInstruccion().add(new Vista((int)Math.rint(n1),(int)Math.rint(n2),(int)Math.rint(n3),(int)Math.rint(n4)));:};
+
+listav::=LISTA V {:parser.getInstruccion().add(new ListaV());:};
+
+listanv::=LISTA NV {:parser.getInstruccion().add(new ListaNV());:};
+
+texto ::= TEXTO  NUMERO:x COMA NUMERO:y COMA CADENA:c {:parser.getInstruccion().add(new Texto(c,(int)Math.rint(x),(int)Math.rint(y)));:};
+
+triangulo::= TRIANGULO NUMERO:n1 COMA NUMERO:n2 COMA NUMERO:n3 COMA NUMERO:n4 COMA NUMERO:n5 COMA NUMERO:n6  {: parser.getInstruccion().add(new Triangulo((int)Math.rint(n1),(int)Math.rint(n2),(int)Math.rint(n3),(int)Math.rint(n4),(int)Math.rint(n5),(int)Math.rint(n6)));:};
+
+linea::= LINEA NUMERO:n1 COMA NUMERO:n2 COMA NUMERO:n3 COMA  NUMERO:n4 {: parser.getInstruccion().add(new Linea((int)Math.rint(n1),(int)Math.rint(n2),(int)Math.rint(n3),(int)Math.rint(n4)));:};
+
+circulo::= CIRCULO NUMERO:n1 COMA  NUMERO:n2 COMA NUMERO:r {: parser.getInstruccion().add(new Circulo((int)Math.rint(n1),(int)Math.rint(n2),(int)Math.rint(r)));:};
+
+punto::= PUNTO NUMERO:n1 COMA NUMERO:n2 {:  parser.getInstruccion().add(new Punto((int)Math.rint(n1),(int)Math.rint(n2)));:};
+
+cuadrado::= CUADRADO NUMERO:n1 COMA NUMERO:n2 COMA NUMERO:n3 COMA NUMERO:n4 {:  parser.getInstruccion().add(new Cuadrado((int)Math.rint(n1),(int)Math.rint(n2),(int)Math.rint(n3),(int)Math.rint(n4)));:};
+
+imagen::= IMAGEN  NUMERO:x COMA NUMERO:y COMA NUMERO:width COMA NUMERO:height COMA CADENA:direccion {:Image imagen=Toolkit.getDefaultToolkit ().getImage(direccion);  parser.getInstruccion().add(new Imagen((int)Math.rint(x),(int)Math.rint(y),(int)Math.rint(width),(int)Math.rint(height), direccion,imagen));:};
