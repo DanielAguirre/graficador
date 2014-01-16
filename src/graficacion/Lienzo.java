@@ -299,9 +299,6 @@ public class Lienzo  extends Canvas{
             Linea(new Linea((int)xp12,(int)yp12,(int)xp22,(int)yp22));
             Linea(new Linea((int)xp22,(int)yp22,(int)xp32,(int)yp32));
             Linea(new Linea((int)xp32,(int)yp32,(int)xp12,(int)yp12));
-//         g.drawLine((int)xp12,-(int)yp12,(int)xp22,-(int)yp22);
-//         g.drawLine((int)xp22,-(int)yp22,(int)xp32,-(int)yp32);
-//         g.drawLine((int)xp32,-(int)yp32,(int)xp12,-(int)yp12);
         }
         else{
          draw_sierpinski(g,i-1,xp12,yp12,dx1,dy1);
